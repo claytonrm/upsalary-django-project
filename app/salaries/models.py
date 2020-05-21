@@ -22,4 +22,4 @@ class Salary(models.Model):
     user = models.ForeignKey(Payee, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.amount}"
+        return f"{self.id}"

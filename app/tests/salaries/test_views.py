@@ -1,9 +1,10 @@
+import decimal
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 import pytest
 
 from salaries.models import Salary, Payee
-from salaries.serializers import PayeeSerializer
+from salaries.serializers import SalarySerializer
 
 
 @pytest.mark.django_db
@@ -102,3 +103,25 @@ def test_created_salary_no_amount(client):
     # Then
     assert response.status_code == 400
     assert len(Salary.objects.all()) == 0
+
+
+@pytest.mark.django_db
+def test_get_single_salary(client):
+    salary = {
+        "user": {"name": "John Mayer", "entry": "2345643", "birthdate": date(1975, 12, 27)},
+        "amount": 60000,
+        "taxes": 200.00,
+        "received_at": datetime(2020, 5, 20, 10, 10, 54, 343, timezone.utc)
+    }
+    salary_serializer = SalarySerializer.create(SalarySerializer(), validated_data=salary)
+
+    response = client.get(f"/api/salaries/{salary_serializer.id}/")
+
+    assert response.status_code == 200
+    assert response.data['user']['name'] == "John Mayer"
+    assert response.data['user']['entry'] == "2345643"
+    assert response.data['user']['birthdate'] == "1975-12-27"
+    assert decimal.Decimal(response.data['amount']) == 60000
+    assert decimal.Decimal(response.data['taxes']) == 200
+
+    

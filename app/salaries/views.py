@@ -7,7 +7,7 @@ from .models import Salary, Payee
 from .serializers import SalarySerializer
 
 
-class SalaryView(APIView):
+class SalaryList(APIView):
 
     def post(self, request, format=None):
         serializer = SalarySerializer(data=request.data)
@@ -17,3 +17,19 @@ class SalaryView(APIView):
         
         serializer.save()
         return Response(None, status=status.HTTP_201_CREATED)
+
+
+class SalaryDetail(APIView):
+
+    def get(self, request, pk, format=None):
+        salary = self.get_object(pk)
+        serializer = SalarySerializer(salary)
+        return Response(serializer.data)
+
+
+    def get_object(self, pk):
+        try:
+            return Salary.objects.get(pk=pk)
+        except Salary.DoesNotExist:
+            raise Http404
+    
