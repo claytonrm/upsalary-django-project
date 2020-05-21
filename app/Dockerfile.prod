@@ -1,0 +1,26 @@
+FROM python:3.8.3-alpine
+
+WORKDIR /usr/src/app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV DEBUG 0
+ENV SECRET_KEY l6tha+y_+g8iji8bkn#^!vu$zjn%*^^#^$(e6o5ii39**#27!3
+ENV DJANGO_ALLOWED_HOSTS .herokuapp.com
+
+RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
+
+RUN pip install --upgrade pip
+COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN pip install -r requirements.txt
+
+COPY . /usr/src/app/
+
+RUN python manage.py collectstatic --noinput
+
+# Running the image as a non-root user
+# https://devcenter.heroku.com/articles/container-registry-and-runtime#run-the-image-as-a-non-root-user
+RUN adduser -D myuser
+USER myuser
+
+CMD gunicorn upsalary.wsgi:application --bind 0.0.0.0:$PORT

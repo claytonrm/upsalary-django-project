@@ -18,6 +18,11 @@ class SalaryList(APIView):
         serializer.save()
         return Response(None, status=status.HTTP_201_CREATED)
 
+    def get(self, request, format=None):
+        salary = Salary.objects.all()
+        serializer = SalarySerializer(salary, many=True)
+        return Response(serializer.data)
+
 
 class SalaryDetail(APIView):
 

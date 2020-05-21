@@ -1,0 +1,59 @@
+[
+    {
+        "model": "salaries.payee",
+        "pk": 1,
+        "fields": {
+            "name": "Jonathan Davis",
+            "entry": "123456789",
+            "birthdate": "1973-01-20"
+        }
+    },
+    {
+        "model": "salaries.payee",
+        "pk": 2,
+        "fields": {
+            "name": "Brian Welch",
+            "entry": "567654334",
+            "birthdate": "1973-01-21"
+        }
+    },
+    {
+        "model": "salaries.payee",
+        "pk": 3,
+        "fields": {
+            "name": "James Shaffer",
+            "entry": "78654345",
+            "birthdate": "1972-01-22"
+        }
+    },
+    {
+        "model": "salaries.salary",
+        "pk": 1,
+        "fields": {
+            "user_id": 1, 
+            "amount": 80000.5,
+            "taxes": 6035.9,
+            "received_at": "2020-05-21T07:23:41.316264Z"
+        }
+    },
+    {
+        "model": "salaries.salary",
+        "pk": 2,
+        "fields": {
+            "user_id": 2,
+            "amount": 90484.5,
+            "taxes": 12345.4,
+            "received_at": "2020-05-20T07:20:41.316264Z"
+        }
+    },
+    {
+        "model": "salaries.salary",
+        "pk": 3,
+        "fields": {
+            "user_id": 3,
+            "amount": 67755.77,
+            "taxes": 4433.4,
+            "received_at": "2020-01-15T07:23:28.316264Z"
+        }
+    }
+]
