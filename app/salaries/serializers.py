@@ -16,7 +16,6 @@ class SalarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Salary
         fields = '__all__'
-        required = ('amo')
         read_only_fields = ('id', 'received_at')
 
     
