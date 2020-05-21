@@ -1,7 +1,6 @@
 from django.urls import path
 
-from .views import SalaryList, SalaryDetail
-
+from .views import SalaryDetail, SalaryList
 
 urlpatterns = [
     path("api/salaries/", SalaryList.as_view()),

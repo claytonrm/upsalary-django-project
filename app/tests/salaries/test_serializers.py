@@ -1,6 +1,5 @@
-from datetime import date, datetime, timezone
-from salaries.serializers import PayeeSerializer, SalarySerializer
-from salaries.models import Payee
+from datetime import date, datetime
+from salaries.serializers import SalarySerializer
 
 # def test_valid_payee_serializer():
 #     # Given

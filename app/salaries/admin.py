@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 
-from .models import Payee, Salary, CustomUser
+from .models import CustomUser, Payee, Salary
+
 
 @admin.register(CustomUser)
 class UserAdmin(DefaultUserAdmin):

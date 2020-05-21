@@ -33,5 +33,5 @@ def test_salary_model():
     # Then
     assert salary.amount == 40454.95
     assert salary.taxes == 1309.89
-    assert salary.received_at != None
+    assert salary.received_at is not None
     assert str(salary.user) == "987654321 - Josh Klinghoffer"

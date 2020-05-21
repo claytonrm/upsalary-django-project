@@ -1,9 +1,9 @@
 from django.http import Http404
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .models import Salary, Payee
+from .models import Salary
 from .serializers import SalarySerializer
 
 
@@ -14,7 +14,7 @@ class SalaryList(APIView):
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         serializer.save()
         return Response(None, status=status.HTTP_201_CREATED)
 
@@ -31,10 +31,8 @@ class SalaryDetail(APIView):
         serializer = SalarySerializer(salary)
         return Response(serializer.data)
 
-
     def get_object(self, pk):
         try:
             return Salary.objects.get(pk=pk)
         except Salary.DoesNotExist:
             raise Http404
-    
