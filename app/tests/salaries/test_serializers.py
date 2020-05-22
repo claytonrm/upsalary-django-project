@@ -1,21 +1,6 @@
 from datetime import date, datetime
 from salaries.serializers import SalarySerializer
 
-# def test_valid_payee_serializer():
-#     # Given
-#     valid_serializer_data = {
-#         "name": "Billy Jean",
-#         "entry": "123456789",
-#         "birthdate": date(2000, 1, 20)
-#     }
-
-#     # When
-#     serializer = PayeeSerializer(data=valid_serializer_data)
-
-#     # Then
-#     assert serializer.is_valid()
-#     assert serializer.errors == {}
-
 
 def test_valid_salary_serializer():
     # Given

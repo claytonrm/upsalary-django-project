@@ -1,19 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 
-from .models import CustomUser, Payee, Salary
+from .models import CustomUser, Salary
 
 
 @admin.register(CustomUser)
 class UserAdmin(DefaultUserAdmin):
     pass
-
-
-@admin.register(Payee)
-class UserAdmin(admin.ModelAdmin):
-    fields = ("name", "entry", "birthdate")
-    list_display = ("name", "entry", "birthdate")
-    readonly_fields = ()
 
 
 @admin.register(Salary)

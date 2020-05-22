@@ -1,15 +1,8 @@
 from rest_framework import serializers
 
-from .models import Payee, Salary
+from payees.serializers import PayeeSerializer
 
-
-# Movie to Payee app
-class PayeeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Payee
-        fields = '__all__'
-        read_only_fields = ('id',)
+from .models import Salary
 
 
 class SalarySerializer(serializers.ModelSerializer):

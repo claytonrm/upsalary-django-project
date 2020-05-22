@@ -1,18 +1,20 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from payees.models import Payee
+
 
 class CustomUser(AbstractUser):
     pass
 
 
-class Payee(models.Model):
-    name = models.CharField(max_length=255)
-    entry = models.CharField(max_length=14)
-    birthdate = models.DateField()
+# class Payee(models.Model):
+#     name = models.CharField(max_length=255)
+#     entry = models.CharField(max_length=14)
+#     birthdate = models.DateField()
 
-    def __str__(self):
-        return f"{self.entry} - {self.name}"
+#     def __str__(self):
+#         return f"{self.entry} - {self.name}"
 
 
 class Salary(models.Model):

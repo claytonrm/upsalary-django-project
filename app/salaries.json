@@ -1,6 +1,6 @@
 [
     {
-        "model": "salaries.payee",
+        "model": "payees.payee",
         "pk": 1,
         "fields": {
             "name": "Jonathan Davis",
@@ -9,7 +9,7 @@
         }
     },
     {
-        "model": "salaries.payee",
+        "model": "payees.payee",
         "pk": 2,
         "fields": {
             "name": "Brian Welch",
@@ -18,7 +18,7 @@
         }
     },
     {
-        "model": "salaries.payee",
+        "model": "payees.payee",
         "pk": 3,
         "fields": {
             "name": "James Shaffer",
