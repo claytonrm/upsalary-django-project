@@ -164,3 +164,64 @@ def test_remove_salary_incorrect_id(client):
 
     # Then
     assert response.status_code == 404
+
+
+@pytest.mark.skip("Missing a way to deal with nested objects update")
+def test_update_salary(client, add_salary):
+    # Given
+    tom = Payee.objects.create(name="Tom", entry="1234323453", birthdate=date(1991, 12, 12))
+    salary = add_salary(user=tom, amount=99000)
+
+    # When
+    response = client.put(
+        f"/api/salaries/{salary.id}/", {
+            "amount": 100000,
+            "taxes": 20000
+        },
+        content_type="application/json"
+    )
+
+    # Then
+    assert response.status_code == 204
+
+    response_after = client.get(f"/api/salaries/{salary.id}/")
+    assert response_after.status_code == 200
+    assert float(response_after.data['amount']) == 100000
+    assert float(response_after.data['taxes']) == 20000
+
+
+@pytest.mark.django_db
+def test_update_incorrect_id(client):
+    # Given
+    # When
+    response = client.put("/api/salaries/99/")
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("add_salary, payload, status_code", [
+    ["add_salary", {}, 400],
+    ["add_salary", {"taxes": 1000}, 400],
+], indirect=["add_salary"])
+def test_update_salary_invalid_json(client, add_salary, payload, status_code):
+    # Given
+    travis = Payee.objects.create(name="Travis", entry=4545444443, birthdate=date(1993, 12, 12))
+    salary = add_salary(user=travis, amount=19330, taxes=349)
+
+    # When
+    response = client.put(f"/api/salaries/{salary.id}/", payload, content_type="application/json")
+
+    # Then
+    assert response.status_code == status_code
+
+
+@pytest.mark.django_db
+def test_update_salary_invalid_json_keys(client, add_salary):
+    # Given
+    matt = Payee.objects.create(name="Matt", entry=34333345667, birthdate=date(1990, 1, 12))
+    salary = add_salary(user=matt, amount=19330, taxes=349)
+
+    # When
+    response = client.put(f"/api/salaries/{salary.id}/", {"taxes": 343}, content_type="application/json")
+
+    assert response.status_code == 400
