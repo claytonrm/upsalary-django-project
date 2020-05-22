@@ -31,6 +31,11 @@ class SalaryDetail(APIView):
         serializer = SalarySerializer(salary)
         return Response(serializer.data)
 
+    def delete(self, request, pk, format=None):
+        salary = self.get_object(pk)
+        salary.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     def get_object(self, pk):
         try:
             return Salary.objects.get(pk=pk)

@@ -119,16 +119,48 @@ def test_get_single_salary(client, add_salary):
 
 @pytest.mark.django_db
 def test_get_all_salaries(client, add_salary):
+    # Given
     billy = Payee.objects.create(name="Billy", entry=345454, birthdate=date(1970, 11, 20))
     add_salary(user=billy, amount=54998.3, taxes=3004.68)
 
     joe = Payee.objects.create(name="Joe", entry=2345654334, birthdate=date(1980, 1, 1))
     add_salary(user=joe, amount=23434, taxes=566.68)
 
+    # When
     response = client.get("/api/salaries/")
 
+    # Then
     assert response.status_code == 200
     assert float(response.data[0]['amount']) == 54998.3
     assert response.data[0]['user']['name'] == "Billy"
     assert float(response.data[1]['amount']) == 23434.0
     assert response.data[1]['user']['name'] == "Joe"
+
+
+@pytest.mark.django_db
+def test_remove_salary(client, add_salary):
+    # Given
+    mark = Payee.objects.create(name="Mark", entry=5434343366, birthdate=date(1996, 12, 3))
+    salary = add_salary(user=mark, amount=20400.8, taxes=8000.03)
+    response_before = client.get(f"/api/salaries/{salary.id}/")
+    assert response_before.status_code == 200
+    assert float(response_before.data['amount']) == 20400.8
+
+    # When
+    response = client.delete(f"/api/salaries/{salary.id}/")
+    assert response.status_code == 204
+
+    # Then
+    response_after = client.get("/api/salaries/")
+    assert response_after.status_code == 200
+    assert len(response_after.data) == 0
+
+
+@pytest.mark.django_db
+def test_remove_salary_incorrect_id(client):
+    # Given
+    # When
+    response = client.delete("/api/salaries/9999/")
+
+    # Then
+    assert response.status_code == 404
