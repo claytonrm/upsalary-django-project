@@ -3,6 +3,6 @@ from django.urls import path
 from .views import SalaryDetail, SalaryList
 
 urlpatterns = [
-    path("api/salaries/", SalaryList.as_view()),
-    path("api/salaries/<int:pk>/", SalaryDetail.as_view()),
+    path('', SalaryList.as_view()),
+    path('<int:pk>/', SalaryDetail.as_view()),
 ]

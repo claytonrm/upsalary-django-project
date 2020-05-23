@@ -248,3 +248,34 @@ def test_update_salary_invalid_json(client, add_salary, payload, status_code):
 
     # Then
     assert response.status_code == status_code
+
+
+@pytest.mark.django_db
+def test_get_salary_by_query_param(client, add_salary):
+    # Given
+    travis = Payee.objects.create(name="Travis", entry=4545444443, birthdate=date(1993, 12, 12))
+    add_salary(
+        user=travis,
+        amount=19330,
+        taxes=349
+    )
+
+    add_salary(
+        user=Payee.objects.create(name="Mark", entry=5434343366, birthdate=date(1996, 12, 3)),
+        amount=20400.8,
+        taxes=8000.03
+    )
+
+    add_salary(
+        user=Payee.objects.create(name="Tom", entry="1234323453", birthdate=date(1991, 12, 12)),
+        amount=99000
+    )
+
+    # When
+    response = client.get('/api/salaries/', {'user_id': travis.id})
+
+    # Then
+    assert response.status_code == 200
+    assert len(response.data) == 1
+    assert response.data[0]['user']['name'] == travis.name
+    assert float(response.data[0]['amount']) == 19330

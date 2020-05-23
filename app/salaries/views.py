@@ -1,5 +1,5 @@
 from django.http import Http404
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -7,7 +7,9 @@ from .models import Salary
 from .serializers import SalarySerializer
 
 
-class SalaryList(APIView):
+class SalaryList(generics.ListAPIView):
+    model = Salary
+    serializer_class = SalarySerializer
 
     def post(self, request, format=None):
         serializer = SalarySerializer(data=request.data)
@@ -19,10 +21,12 @@ class SalaryList(APIView):
         headers = self.get_success_headers(request, serializer.data)
         return Response(None, status=status.HTTP_201_CREATED, headers=headers)
 
-    def get(self, request, format=None):
-        salary = Salary.objects.all()
-        serializer = SalarySerializer(salary, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        queryset = Salary.objects.all()
+        user_id = self.request.query_params.get('user_id', None)
+        if user_id is not None:
+            queryset = queryset.filter(user_id=user_id)
+        return queryset
 
     def get_success_headers(self, request, data):
         try:
@@ -34,9 +38,10 @@ class SalaryList(APIView):
 class SalaryDetail(APIView):
 
     def get(self, request, pk, format=None):
-        salary = self.get_object(pk)
-        serializer = SalarySerializer(salary)
-        return Response(serializer.data)
+        if pk is not None:
+            salary = self.get_object(pk)
+            serializer = SalarySerializer(salary)
+            return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
         salary = self.get_object(pk)
