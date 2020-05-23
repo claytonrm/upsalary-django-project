@@ -16,12 +16,19 @@ class SalaryList(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         serializer.save()
-        return Response(None, status=status.HTTP_201_CREATED)
+        headers = self.get_success_headers(request, serializer.data)
+        return Response(None, status=status.HTTP_201_CREATED, headers=headers)
 
     def get(self, request, format=None):
         salary = Salary.objects.all()
         serializer = SalarySerializer(salary, many=True)
         return Response(serializer.data)
+
+    def get_success_headers(self, request, data):
+        try:
+            return {'Location': str(f"{request.build_absolute_uri()}{data['id']}/")}
+        except (TypeError, KeyError):
+            return {}
 
 
 class SalaryDetail(APIView):

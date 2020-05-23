@@ -14,12 +14,19 @@ class PayeeList(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
         serializer.save()
-        return Response(None, status.HTTP_201_CREATED)
+        headers = self.get_success_headers(request, serializer.data)
+        return Response(None, status.HTTP_201_CREATED, headers=headers)
 
     def get(self, request, format=None):
         payees = Payee.objects.all()
         serializer = PayeeSerializer(payees, many=True)
         return Response(serializer.data)
+
+    def get_success_headers(self, request, data):
+        try:
+            return {'Location': str(f"{request.build_absolute_uri()}{data['id']}/")}
+        except (TypeError, KeyError):
+            return {}
 
 
 class PayeeDetail(APIView):
