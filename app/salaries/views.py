@@ -38,7 +38,7 @@ class SalaryDetail(APIView):
 
     def put(self, request, pk, format=None):
         salary = self.get_object(pk)
-        serializer = SalarySerializer(salary, data=request.data)
+        serializer = SalarySerializer(salary, data=request.data, partial=False)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer.save()

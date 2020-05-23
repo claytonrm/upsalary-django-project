@@ -26,7 +26,38 @@ def test_create_salary(client):
 
 
 @pytest.mark.django_db
-def test_created_salary_no_taxes(client):
+def test_create_salary_existing_user(client, add_salary):
+    # Given
+    add_salary(
+        user=Payee.objects.create(name="John Mayer", entry="2345643", birthdate=date(1975, 12, 27)),
+        amount=60000, taxes=200
+    )
+    salaries_before_post = Salary.objects.all()
+    assert len(salaries_before_post) == 1
+
+    # When
+    response = client.post(
+        "/api/salaries/", {
+            "user": {"name": "Corey", "entry": "2345643", "birthdate": date(1975, 12, 27)},
+            "amount": 23423.33,
+            "taxes": 3434.35
+        },
+        content_type="application/json"
+    )
+
+    # Then
+    assert response.status_code == 201
+
+    response_after = client.get("/api/salaries/")
+    assert len(response_after.data) == 2
+    assert response_after.data[0]['user']['name'] == "Corey"
+    assert response_after.data[1]['user']['name'] == "Corey"
+    assert float(response_after.data[0]['amount']) == 60000
+    assert float(response_after.data[1]['amount']) == 23423.33
+
+
+@pytest.mark.django_db
+def test_create_salary_no_taxes(client):
     # Given
     salaries_before_post = Salary.objects.all()
     assert len(salaries_before_post) == 0
@@ -46,7 +77,7 @@ def test_created_salary_no_taxes(client):
 
 
 @pytest.mark.django_db
-def test_created_salary_empty_json(client):
+def test_create_salary_empty_json(client):
     # Given
     salaries_before_post = Salary.objects.all()
     assert len(salaries_before_post) == 0
@@ -60,7 +91,7 @@ def test_created_salary_empty_json(client):
 
 
 @pytest.mark.django_db
-def test_created_salary_no_user(client):
+def test_create_salary_no_user(client):
     # Given
     salaries_before_post = Salary.objects.all()
     assert len(salaries_before_post) == 0
@@ -80,7 +111,7 @@ def test_created_salary_no_user(client):
 
 
 @pytest.mark.django_db
-def test_created_salary_no_amount(client):
+def test_create_salary_no_amount(client):
     # Given
     salaries_before_post = Salary.objects.all()
     assert len(salaries_before_post) == 0
@@ -166,7 +197,7 @@ def test_remove_salary_incorrect_id(client):
     assert response.status_code == 404
 
 
-@pytest.mark.skip("Missing a way to deal with nested objects update")
+@pytest.mark.django_db
 def test_update_salary(client, add_salary):
     # Given
     tom = Payee.objects.create(name="Tom", entry="1234323453", birthdate=date(1991, 12, 12))
@@ -175,6 +206,7 @@ def test_update_salary(client, add_salary):
     # When
     response = client.put(
         f"/api/salaries/{salary.id}/", {
+            "user": {"name": "Tom DeLonge", "entry": "3443422", "birthdate": date(1991, 6, 17)},
             "amount": 100000,
             "taxes": 20000
         },
@@ -186,8 +218,11 @@ def test_update_salary(client, add_salary):
 
     response_after = client.get(f"/api/salaries/{salary.id}/")
     assert response_after.status_code == 200
+    assert response_after.data['user']['name'] == "Tom DeLonge"
     assert float(response_after.data['amount']) == 100000
     assert float(response_after.data['taxes']) == 20000
+    # Not allowed to update
+    assert response_after.data['user']['entry'] == "1234323453"
 
 
 @pytest.mark.django_db
@@ -213,15 +248,3 @@ def test_update_salary_invalid_json(client, add_salary, payload, status_code):
 
     # Then
     assert response.status_code == status_code
-
-
-@pytest.mark.django_db
-def test_update_salary_invalid_json_keys(client, add_salary):
-    # Given
-    matt = Payee.objects.create(name="Matt", entry=34333345667, birthdate=date(1990, 1, 12))
-    salary = add_salary(user=matt, amount=19330, taxes=349)
-
-    # When
-    response = client.put(f"/api/salaries/{salary.id}/", {"taxes": 343}, content_type="application/json")
-
-    assert response.status_code == 400
