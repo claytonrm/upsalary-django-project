@@ -1,6 +1,8 @@
+from django.db.models import Avg, Max, Min
 from django.http import Http404
-from django.db.models import Avg, Min, Max
-from rest_framework import status, generics
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,6 +14,16 @@ class SalaryList(generics.ListAPIView):
     model = Salary
     serializer_class = SalarySerializer
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "user": openapi.Schema(type=openapi.TYPE_OBJECT),
+                "amount": openapi.Schema(type=openapi.TYPE_NUMBER),
+                "taxes": openapi.Schema(type=openapi.TYPE_NUMBER),
+            },
+        )
+    )
     def post(self, request, format=None):
         serializer = SalarySerializer(data=request.data)
 
@@ -52,6 +64,16 @@ class SalaryDetail(APIView):
         salary.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "user": openapi.Schema(type=openapi.TYPE_OBJECT),
+                "amount": openapi.Schema(type=openapi.TYPE_NUMBER),
+                "taxes": openapi.Schema(type=openapi.TYPE_NUMBER),
+            },
+        )
+    )
     def put(self, request, pk, format=None):
         salary = self.get_object(pk)
         serializer = SalarySerializer(salary, data=request.data, partial=False)

@@ -1,7 +1,8 @@
 from rest_framework import serializers
+
 from payees.serializers import PayeeSerializer
 
-from .models import Salary, Payee
+from .models import Payee, Salary
 
 
 class SalarySerializer(serializers.ModelSerializer):

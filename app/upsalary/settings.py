@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_yasg',
     'salaries',
     'payees'
 ]
@@ -75,13 +76,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'upsalary.wsgi.application'
 
-if not DEBUG:
-    REST_FRAMEWORK = {
-        "DEFAULT_RENDERER_CLASSES": (
-            "rest_framework.renderers.JSONRenderer",
-        )
-    }
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema"
+}
 
+if not DEBUG:
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer",)
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -143,3 +143,10 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+# Swagger
+
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False
+}
