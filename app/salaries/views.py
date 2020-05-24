@@ -1,10 +1,11 @@
 from django.http import Http404
+from django.db.models import Avg, Min, Max
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Salary
-from .serializers import SalarySerializer
+from .serializers import SalarySerializer, SalarySummarySerializer
 
 
 class SalaryList(generics.ListAPIView):
@@ -24,8 +25,11 @@ class SalaryList(generics.ListAPIView):
     def get_queryset(self):
         queryset = Salary.objects.all()
         user_id = self.request.query_params.get('user_id', None)
-        if user_id is not None:
-            queryset = queryset.filter(user_id=user_id)
+        return self.filter_by('user_id', user_id, queryset)
+
+    def filter_by(self, param, value, queryset):
+        if value is not None:
+            queryset = queryset.filter(**{param: value})
         return queryset
 
     def get_success_headers(self, request, data):
@@ -61,3 +65,17 @@ class SalaryDetail(APIView):
             return Salary.objects.get(pk=pk)
         except Salary.DoesNotExist:
             raise Http404
+
+
+class SalarySummaryDetail(APIView):
+    serializer_class = SalarySummarySerializer
+
+    def get(self, request):
+        agg_salary = Salary.objects.all().aggregate(Avg('amount'), Min('amount'), Max('amount'), Avg('taxes'))
+        amount = {
+            "average": agg_salary['amount__avg'],
+            "lowest": agg_salary['amount__min'],
+            "highest": agg_salary['amount__max']
+        }
+        taxes = {"average": agg_salary['taxes__avg']}
+        return Response({"amount": amount, "taxes": taxes})

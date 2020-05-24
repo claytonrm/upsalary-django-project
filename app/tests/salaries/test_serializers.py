@@ -1,5 +1,6 @@
 from datetime import date, datetime
-from salaries.serializers import SalarySerializer
+from salaries.serializers import SalarySerializer, SalaryAmountSummarySerializer, SalarySummarySerializer
+from salaries.serializers import SalaryTaxesSummarySerializer
 
 
 def test_valid_salary_serializer():
@@ -16,8 +17,6 @@ def test_valid_salary_serializer():
 
     # Then
     assert serializer.is_valid()
-    # assert serializer.validated_data == expected_validated_data
-    # assert serializer.data == expected_validated_data
     assert serializer.errors == {}
 
 
@@ -31,5 +30,77 @@ def test_invalid_salary_serializer():
     serializer = SalarySerializer(data=invalid_serializer_data)
     assert not serializer.is_valid()
     assert serializer.validated_data == {}
-    # assert serializer.data == invalid_serializer_data
     assert serializer.errors == {"amount": ["This field is required."]}
+
+
+def test_salary_amount_summary_serializer():
+    valid_serializer_data = {
+        "average": 1000.0,
+        "highest": 900.0,
+        "lowest": 950.0,
+    }
+
+    serializer = SalaryAmountSummarySerializer(data=valid_serializer_data)
+    assert serializer.is_valid()
+    assert serializer.validated_data == valid_serializer_data
+    assert serializer.errors == {}
+
+
+def test_invalid_salary_aggretation_serializer():
+    invalid_serializer_data = {
+        "highest": 900.0,
+        "lowest": 950.0,
+    }
+
+    serializer = SalaryAmountSummarySerializer(data=invalid_serializer_data)
+    assert not serializer.is_valid()
+    assert serializer.validated_data == {}
+    assert serializer.data == invalid_serializer_data
+    assert serializer.errors == {"average": ["This field is required."]}
+
+
+def test_salary_taxes_summary_serializer():
+    valid_serializer_data = {
+        "average": 5000.0,
+    }
+
+    serializer = SalaryTaxesSummarySerializer(data=valid_serializer_data)
+    assert serializer.is_valid()
+    assert serializer.validated_data == valid_serializer_data
+    assert serializer.errors == {}
+
+
+def test_salary_summary_serializer():
+    valid_serializer_data = {
+        "amount": {
+            "average": 1000.0,
+            "highest": 900.0,
+            "lowest": 950.0,
+        },
+        "taxes": {
+            "average": 393.0
+        }
+    }
+
+    serializer = SalarySummarySerializer(data=valid_serializer_data)
+    assert serializer.is_valid()
+    assert serializer.validated_data == valid_serializer_data
+    assert serializer.errors == {}
+
+
+def test_invalid_salary_summary_serializer():
+    invalid_serializer_data = {
+        "amount": {
+            "average": 1000.0,
+            "lowest": 950.0,
+        },
+        "taxes": {
+            "average": 393.0
+        }
+    }
+    serializer = SalarySummarySerializer(data=invalid_serializer_data)
+
+    assert not serializer.is_valid()
+    assert serializer.validated_data == {}
+    assert serializer.data == invalid_serializer_data
+    assert serializer.errors == {"amount": {"highest": ["This field is required."]}}

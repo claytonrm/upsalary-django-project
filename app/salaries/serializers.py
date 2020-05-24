@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from payees.serializers import PayeeSerializer
 
 from .models import Salary, Payee
@@ -48,3 +47,27 @@ class SalarySerializer(serializers.ModelSerializer):
             return Payee.objects.get(entry=entry)
         except Payee.DoesNotExist:
             pass
+
+
+class SalaryAmountSummarySerializer(serializers.Serializer):
+    average = serializers.DecimalField(max_digits=19, decimal_places=2)
+    highest = serializers.DecimalField(max_digits=19, decimal_places=2)
+    lowest = serializers.DecimalField(max_digits=19, decimal_places=2)
+
+    class Meta:
+        fields = ('__all__')
+
+
+class SalaryTaxesSummarySerializer(serializers.Serializer):
+    average = serializers.DecimalField(max_digits=19, decimal_places=2)
+
+    class Meta:
+        fields = ('__all__')
+
+
+class SalarySummarySerializer(serializers.Serializer):
+    amount = SalaryAmountSummarySerializer()
+    taxes = SalaryTaxesSummarySerializer()
+
+    class Meta:
+        fields = ("__all__")
